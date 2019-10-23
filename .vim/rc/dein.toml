@@ -1,0 +1,158 @@
+#===============================================================
+#   Description: dein.toml
+#   Author: N-Shinoda
+#   Last Modified: 2019-09-15
+#===============================================================
+
+#===============================================================
+# colorscheme
+# カラースキーム
+#===============================================================
+[[plugins]]
+repo = 'cocopon/iceberg.vim'
+
+# [[plugins]]
+# repo = 'jonathanfilip/vim-lucius'
+
+# [[plugins]]
+# repo = 'johngrib/vim-dracula'
+
+#===============================================================
+# Shougo/dein.vim
+# プラグインマネージャ
+#===============================================================
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+#===============================================================
+# Shougo/denite.nvim
+# 一覧から特定のデータを検索してアクションを実行する
+#===============================================================
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+hook_add = '''
+    nmap <Space> [denite]
+    nmap <Space>p [deniteProject]
+    nmap <silent> [denite]b :<C-u>Denite buffer<CR>
+    nmap <silent> [denite]g :<C-u>Denite grep<CR>
+    nmap <silent> [denite]m :<C-u>Denite file_mru<CR> <silent> <C-u><C-y> :<C-u>Denite neoyank<CR>
+    nmap <silent> [denite]f :<C-u>Denite file/rec<CR>
+    nmap <silent> [denite]d :<C-u>Denite directory_rec<CR>
+    nmap <silent> [deniteProject]b :<C-u>DeniteProject buffer<CR>
+    nmap <silent> [deniteProject]g :<C-u>DeniteProject grep<CR>
+    nmap <silent> [deniteProject]m :<C-u>DeniteProject file_mru<CR> <silent> <C-u><C-y> :<C-u>Denite neoyank<CR>
+    nmap <silent> [deniteProject]f :<C-u>DeniteProject file/rec<CR>
+    nmap <silent> [deniteProject]d :<C-u>DeniteProject directory_rec<CR>
+'''
+hook_source = '''
+    if executable('rg')
+        call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
+        call denite#custom#var('file_rec', 'command', ['rg', '--files', '--glob', '!.git'])
+        call denite#custom#var('grep', 'command', ['rg', '--threads', '1'])
+        call denite#custom#var('grep', 'recursive_opts', [])
+        call denite#custom#var('grep', 'final_opts', [])
+        call denite#custom#var('grep', 'separator', ['--'])
+        call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+    endif
+    call denite#custom#map('insert', "<C-n>", '<denite:move_to_next_line>')
+    call denite#custom#map('insert', "<C-p>", '<denite:move_to_previous_line>')
+    call denite#custom#map('insert', "<C-t>", '<denite:do_action:tabopen>')
+    call denite#custom#map('insert', "<C-v>", '<denite:do_action:vsplit>')
+    call denite#custom#map('insert', "<C-h>", '<denite:do_action:split>')
+    call denite#custom#filter('matcher_ignore_globs', 'ignore_globs', [
+                \ '.git/', 'build/', '__pycache__/',
+                \ 'images/', '*.o', '*.make', '*.min.*',
+                \ 'img/', 'fonts/', '*~', '*.exe', '*.bak',
+                \ '.DS_Store', '*.pyc', '*.class', 'tags'
+                \ ])
+'''
+#===============================================================
+# Yggdroot/indentLine
+# インデントを見やすくする
+#===============================================================
+[[plugins]]
+repo = 'Yggdroot/indentLine'
+
+#===============================================================
+# cohama/lexima.vim
+# 閉じ括弧を補完する
+#===============================================================
+[[plugins]]
+repo = 'cohama/lexima.vim'
+
+#===============================================================
+# itchyny/lightline.vim
+# ステータスラインの表示内容が強化するプラグイン
+#===============================================================
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+    let g:lightline = {
+    \ 'colorscheme': 'wombat', 
+    \ 'mode_map': {'c': 'NORMAL'},
+    \ 'active': {
+    \   'left': [ [ 'mode', 'paste' ],
+    \           [ 'readonly', 'filename', 'modified' ] ]
+    \ },
+    \ 'component_function': {
+    \   'modified': 'LightlineModified',
+    \   'readonly': 'LightlineReadonly',
+    \   'filename': 'LightlineFilename',
+    \   'fileformat': 'LightlineFileformat',
+    \   'filetype': 'LightlineFiletype',
+    \   'fileencoding': 'LightlineFileencoding',
+    \   'mode': 'LightlineMode'
+    \ }
+    \ }
+
+    function! LightlineModified()
+    return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+    endfunction
+
+    function! LightlineReadonly()
+    return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'x' : ''
+    endfunction
+
+    function! LightlineFilename()
+    return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
+        \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
+        \  &ft == 'unite' ? unite#get_status_string() :
+        \  &ft == 'vimshell' ? vimshell#get_status_string() :
+        \  '' != expand('%:t') ? expand('%:t') : '[No Name]') .
+        \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
+    endfunction
+
+    function! LightlineFileformat()
+    return winwidth(0) > 70 ? &fileformat : ''
+    endfunction
+
+    function! LightlineFiletype()
+    return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+    endfunction
+
+    function! LightlineFileencoding()
+    return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
+    endfunction
+
+    function! LightlineMode()
+    return winwidth(0) > 60 ? lightline#mode() : ''
+    endfunction
+'''
+#===============================================================
+# Shougo/neosnippet-snippets↲#=
+# スニッペットを集めた定義ファイル群↲
+#=========== ===================================================
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
+
+#===============================================================
+# scrooloose/nerdtree
+# ディレクトリをツリー表示する
+#===============================================================
+[[plugins]]
+repo = 'scrooloose/nerdtree'
+hook_source = '''
+    " 隠しファイルを設定する
+    let NERDTreeShowHidden = 1
+    nnoremap <silent><C-e> :NERDTreeToggle<CR>
+'''
